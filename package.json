@@ -16,6 +16,7 @@
     "node-uuid": "^1.4.8",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
+    "react-addons-pure-render-mixin": "^15.5.2",
     "react-dom": "^15.5.4",
     "react-flip-move": "^2.9.13",
     "react-modal": "^1.7.7",

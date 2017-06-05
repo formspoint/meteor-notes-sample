@@ -25,3 +25,4 @@ session@1.1.7
 fourseven:scss
 practicalmeteor:mocha
 dynamic-import
+react-meteor-data
