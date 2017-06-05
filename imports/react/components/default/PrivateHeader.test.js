@@ -20,5 +20,19 @@ if (Meteor.isClient) {
 
             expect(h1.text()).toBe(title);
         });
+
+        it('Should call handleLogout on button click', function () {
+            // Create a spy in order to simulate user interaction.
+            // The following declares a Mock Function using an expect spy:
+            const spy = expect.createSpy();
+            // The spy is a function, so it has to be passed as argument to a prop.
+            // In our specific case, please refer to PrivateHeader.jsx to see
+            // the necessary changes over there.
+            const wrapper = mount(<PrivateHeader title='Any title' handleLogout={spy} />);
+
+            wrapper.find('button').simulate('click');
+
+            expect(spy).toHaveBeenCalled();
+        });
     });
 }
