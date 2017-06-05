@@ -7,7 +7,7 @@ const PrivateHeader = (props) => {
         <div className='private-header'>
             <div className='private-header__container'>
                 <h1 className='private-header__title'>{props.title}</h1>
-                <button className="button button--header" onClick={()=>Accounts.logout()}>Logout</button>
+                <button className="button button--header" onClick={() => Accounts.logout()}>Logout</button>
             </div>
         </div>
     );
