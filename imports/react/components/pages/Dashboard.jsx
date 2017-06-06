@@ -2,7 +2,7 @@ import React from 'react';
 import PrivateHeader from '/imports/react/components/default/PrivateHeader';
 import NoteList from '/imports/react/components/NoteList';
 
-export default () => {
+const Dashboard = () => {
     return (
         <div>
             <PrivateHeader title='Dashboard' />
@@ -12,3 +12,5 @@ export default () => {
         </div>
     );
 };
+
+export default Dashboard;

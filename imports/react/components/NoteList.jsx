@@ -6,6 +6,7 @@ import { Notes } from '/imports/api/notes';
 
 import NoteListHeader from '/imports/react/components/NoteListHeader';
 import NoteListItem from '/imports/react/components/NoteListItem';
+import NoteListEmptyItem from '/imports/react/components/NoteListEmptyItem';
 
 export const NoteList = (props) => {
     return (
@@ -13,10 +14,13 @@ export const NoteList = (props) => {
             <NoteListHeader />
             NoteList {props.notes.length}
             {
+                props.notes.length > 0 ?
                 /* Render note items */
                 props.notes.map((note) => {
                     return <NoteListItem key={note._id} note={note} />
                 })
+                :
+                <NoteListEmptyItem />
             }
         </div>
     );
