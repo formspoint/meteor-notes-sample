@@ -4,6 +4,8 @@ import SimpleSchema from 'simpl-schema';
 import moment from 'moment';
 
 export const Notes = new Mongo.Collection('notes');
+export const updatedAtFormat = 'M/DD/YY';
+export const defaultNoteTitle = 'Untitled Note';
 
 if (Meteor.isServer) {
     // The publish method returns a cursor! I order to get the actual data we have to use .fetch() afterwards.
@@ -19,7 +21,7 @@ Meteor.methods({
             title: '',
             body: '',
             userId: this.userId,
-            updatedAt: moment().unix()
+            updatedAt: new Date().getTime()
         });
     },
     'notes.remove'(_id) {
