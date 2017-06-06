@@ -11,37 +11,27 @@ export class Login extends React.Component {
             error: '',
             invalidAttempts: 0
         };
-        this.validatePassword = this.validatePassword.bind(this);
         this.clearFields = this.clearFields.bind(this);
     }
     onSubmit(e) {
         e.preventDefault();
+        this.setState({ error: '' });
         let email = this.refs.email.value.trim();
         let password = this.refs.password.value.trim();
         if (!!email && !!password) {
-            if (!this.validatePassword(password)) {
-                this.setState({ 
-                    error: 'Invalid login attempt. Please supply valid credentials.',
-                    invalidAttempts: this.state.invalidAttempts++
-                 });
-                this.clearFields();
-                this.refs.email.focus();
-                return;
-            } else { this.setState({ error: '' }); }
-
             this.props.loginWithPassword({ email }, password, (err) => {
                 if (err) {
                     switch (err.error) {
                         case 400:
                             this.setState({
-                                error: 'Login attempt failed. You supplied incorrect credentials.',
-                                invalidAttempts: this.state.invalidAttempts++
+                                error: 'Login attempt failed. You supplied incorrect credentials.'
                             });
                             break;
                         default:
                             this.setState({ error: err.reason });
                             break;
                     }
+                    this.setState({ invalidAttempts: this.state.invalidAttempts++ });
                     this.refs.email.focus();
                     this.clearFields();
                 } else {
@@ -53,11 +43,6 @@ export class Login extends React.Component {
             this.clearFields();
             this.refs.email.focus();
         }
-    }
-    validatePassword(password) {
-        let pwdRegex = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{6,8}$/);
-        if (pwdRegex.test(password)) return true;
-        return false;
     }
     clearFields(arrRefNames = []) {
         if (arrRefNames.length === 0) {
@@ -90,7 +75,8 @@ export class Login extends React.Component {
 Login.propTypes = {
     loginWithPassword: PropTypes.func.isRequired
 };
-export default createContainer(()=>{
+
+export default createContainer(() => {
     return {
         loginWithPassword: Meteor.loginWithPassword
     };

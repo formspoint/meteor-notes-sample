@@ -4,41 +4,53 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import Tooltip from 'react-portal-tooltip';
+import { userCredentialsSchema } from '/imports/startup/simple-schema-config';
+import { createContainer } from 'meteor/react-meteor-data';
 
-class Signup extends React.Component {
+export class Signup extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       error: '',
       pwdTtipActive: false // <- maintains the password modal open/close state
     };
-    this.validatePassword = this.validatePassword.bind(this);
     this.clearFields = this.clearFields.bind(this);
   }
   onSubmit(e) {
     e.preventDefault();
-    this.setState({pwdTtipActive: false});
+    this.setState({ pwdTtipActive: false });
     let email = this.refs.email.value.trim();
     let password = this.refs.password.value.trim();
     let rePassword = this.refs.rePassword.value.trim();
     if (!!email && !!password && !!rePassword) {
-      if (!this.validatePassword(password)) {
-        this.setState({ error: 'Invalid password.' });
-        this.refs.password.focus();
-        this.clearFields(['password', 'rePassword']);
+      try {
+        userCredentialsSchema.validate({ email, password });
+      } catch (e) {
+        switch (e.reason) {
+          case 'Email must be a valid email address':
+            this.setState({ error: e.reason });
+            this.clearFields();
+            this.refs.email.focus();
+            break;
+          case 'Password failed regular expression validation':
+            this.setState({ error: 'Invalid password' });
+            this.clearFields(['password', 'rePassword']);
+            this.refs.password.focus();
+            break;
+        }
         return;
       }
-      else if (password !== rePassword) {
+
+      if (password !== rePassword) {
         this.setState({ error: 'The passwords don\'t match. Please try again.' });
         this.clearFields(['password', 'rePassword']);
         this.refs.password.focus();
         return;
       }
-      else {
-        this.setState({ error: '' });
-      }
 
-      Accounts.createUser({ email, password }, (err) => {
+      this.setState({ error: '' });
+
+      this.props.createUser({ email, password }, (err) => {
         if (err) {
           this.setState({ error: err.reason });
           this.clearFields();
@@ -47,16 +59,12 @@ class Signup extends React.Component {
           this.setState({ error: '' });
         }
       });
-    } else {
+    }
+    else {
       this.setState({ error: 'All fields are required.' });
       if (!email) { this.refs.email.focus(); this.clearFields(); }
       else { this.refs.password.focus(); this.clearFields(['password', 'rePassword']); }
     }
-  }
-  validatePassword(password) {
-    let pwdRegex = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{6,8}$/);
-    if (pwdRegex.test(password)) return true;
-    return false;
   }
   clearFields(arrRefNames = []) {
     if (arrRefNames.length === 0) {
@@ -70,11 +78,11 @@ class Signup extends React.Component {
     }
   }
   // TOOLTIP ACTIONS
-  openPwdTtip(){
-    this.setState({pwdTtipActive: true});
+  openPwdTtip() {
+    this.setState({ pwdTtipActive: true });
   }
-  closePwdTtip(){
-    this.setState({pwdTtipActive: false});
+  closePwdTtip() {
+    this.setState({ pwdTtipActive: false });
   }
   render() {
     return (
@@ -84,12 +92,12 @@ class Signup extends React.Component {
           {this.state.error ? <p className="boxed-view__error">{this.state.error}</p> : undefined}
           <form className='boxed-view__form' onSubmit={this.onSubmit.bind(this)} noValidate>
             <input type="email" ref="email" name="email" placeholder="Email" />
-            <input id='passwrd' 
+            <input id='passwrd'
               onFocus={this.openPwdTtip.bind(this)}
-              onBlur={this.closePwdTtip.bind(this)} 
-                  type="password" 
-              ref="password" 
-              name="password" 
+              onBlur={this.closePwdTtip.bind(this)}
+              type="password"
+              ref="password"
+              name="password"
               placeholder="Password (6-8 characters)" />
             <Tooltip active={this.state.pwdTtipActive} position='right' arrow='center' parent='#passwrd'>
               <div className='tooltip__content'>
@@ -106,4 +114,12 @@ class Signup extends React.Component {
   }
 }
 
-export default Signup;
+Signup.propTypes = {
+  createUser: PropTypes.func.isRequired
+};
+
+export default createContainer(() => {
+  return {
+    createUser: Accounts.createUser
+  };
+}, Signup);
