@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session'; //<-- meteor add session
 import { createContainer } from 'meteor/react-meteor-data';
 
 export class Login extends React.Component {
@@ -12,6 +13,10 @@ export class Login extends React.Component {
             invalidAttempts: 0
         };
         this.clearFields = this.clearFields.bind(this);
+    }
+    componentWillMount(){
+        if(Session.get('userAuthenticated') === true)
+            this.props.history.replace('/dash');
     }
     onSubmit(e) {
         e.preventDefault();

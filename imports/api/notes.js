@@ -2,10 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 import moment from 'moment';
+import { updatedAtFormat, defaultNoteTitle } from '/imports/fixtures/noteFixtures';
 
 export const Notes = new Mongo.Collection('notes');
-export const updatedAtFormat = 'M/DD/YY';
-export const defaultNoteTitle = 'Untitled Note';
 
 if (Meteor.isServer) {
     // The publish method returns a cursor! I order to get the actual data we have to use .fetch() afterwards.

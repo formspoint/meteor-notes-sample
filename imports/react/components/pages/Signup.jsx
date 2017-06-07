@@ -1,5 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session'; //<-- meteor add session
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -15,6 +16,10 @@ export class Signup extends React.Component {
       pwdTtipActive: false // <- maintains the password modal open/close state
     };
     this.clearFields = this.clearFields.bind(this);
+  }
+  componentWillMount() {
+    if (Session.get('userAuthenticated') === true)
+      this.props.history.replace('/dash');
   }
   onSubmit(e) {
     e.preventDefault();
