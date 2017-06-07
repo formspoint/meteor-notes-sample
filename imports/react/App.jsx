@@ -2,9 +2,8 @@ import React from 'react';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session'; //<-- meteor add session
 import Routes, {onAuthChange} from '/imports/react/routes/Router';
-// Create an importable history object
-export const history = require('history').createBrowserHistory();
 
+import history from '/imports/fixtures/browserHistory';
 
 class App extends React.Component {
     componentDidMount(){
@@ -19,6 +18,8 @@ class App extends React.Component {
             const selectedNoteId = Session.get('selectedNoteId');
             if(selectedNoteId){
                 history.replace(`/dash/${selectedNoteId}`);
+            } else {
+                Session.set('selectedNoteId', undefined);
             }
         });
     }

@@ -2,6 +2,8 @@ import { Session } from 'meteor/session'; //<-- meteor add session
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Switch } from 'react-router-dom';
+import { Notes } from '/imports/api/notes';
+
 
 import PageNotFound from '/imports/react/components/pages/PageNotFound';
 import PrivateHeader from '/imports/react/components/default/PrivateHeader';
@@ -13,9 +15,12 @@ class Dashboard extends React.Component {
     }
     componentWillMount() {
         if (Session.get('userAuthenticated') !== true)
-            this.props.history.replace('/');
-        if(Session.get('selectedNoteId') !== this.props.match.params.id)
-            this.props.history.replace('Not Found');
+        { this.props.history.replace('/'); }
+
+        const id = this.props.match.params.id;
+        if (!!id) {
+            Session.set('selectedNoteId', id);
+        }
     }
     render() {
         return (

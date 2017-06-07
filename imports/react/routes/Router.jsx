@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Router, Route, Switch } from 'react-router-dom';
-import { history } from '/imports/react/App';
+import history from '/imports/fixtures/browserHistory';
 // Grab the Website pages (components):
 import Dashboard from '/imports/react/components/pages/Dashboard';
 import Login from '/imports/react/components/pages/Login';
@@ -31,12 +31,6 @@ class Routes extends React.Component {
     constructor(props) {
         super(props);
     }
-    onPublicPage() {
-        if (userAuthenticated) history.replace('/dash');
-    }
-    onPrivatePage() {
-        if (!userAuthenticated) history.replace('/');
-    }
     render() {
         return (
             <Router history={history}>
@@ -44,7 +38,7 @@ class Routes extends React.Component {
                     <Route exact path="/" component={Login}  />
                     <Route exact path="/signup" component={Signup} />
                     <Route exact path="/dash" component={Dashboard} />
-                    <Route exact path="/dash/:id" component={Dashboard} />
+                    <Route path="/dash/:id" component={Dashboard} />
                     <Route component={PageNotFound} />
                 </Switch>
             </Router>
