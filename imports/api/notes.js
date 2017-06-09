@@ -51,7 +51,7 @@ Meteor.methods({
         });
         return Notes.update({ _id, userId: this.userId }, {
             $set: {
-                updatedAt: moment().unix(),
+                updatedAt: new Date().getTime(),
                 ...updates
             }
         });
