@@ -22,7 +22,23 @@
     color: $button_pill_color;
     padding: .3rem .8rem;
     text-transform: capitalize;
-    width: 8rem;
+    // width: 8rem;
+    &.hover-darken:not(.hover-lighten):not(.hover-alt-color):hover{
+        transition: border-color .5s ease-in-out, color .5s ease-in-out;
+        color: $button_pill_color_darken;
+        border-color: $button_pill_color_darken;
+    }
+    &.hover-lighten:not(.hover-darken):not(.hover-alt-color):hover {
+        transition: border-color .5s ease-in-out, color .5s ease-in-out;
+        color: $button_pill_color_lighten;
+        border-color: $button_pill_color_lighten;        
+    }
+    &.hover-alt-color:hover{
+        transition: background-color .5s ease-in-out, color .5s ease-in-out;
+        background-color: $button_pill_color;
+        color: ghostwhite;
+        border-color: none;
+    }
 }
 
 .button--secondary {

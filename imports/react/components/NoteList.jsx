@@ -33,7 +33,6 @@ NoteList.propTypes = {
 
 export default createContainer(() => {
     const selectedNoteId = Session.get('selectedNoteId');
-    Meteor.subscribe('notes');
     return {
         notes: Notes.find().fetch().map((note)=>{
             if(note._id === selectedNoteId) {

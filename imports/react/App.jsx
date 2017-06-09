@@ -1,36 +1,30 @@
 import React from 'react';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session'; //<-- meteor add session
-import Routes, {onAuthChange} from '/imports/react/routes/Router';
+import Routes, { onAuthChange } from '/imports/react/routes/Router';
 
 import history from '/imports/fixtures/browserHistory';
 
 class App extends React.Component {
-    componentDidMount(){
-        // Start the auth tracker
-        this.authTracker = Tracker.autorun(()=>{
-            const isAuthenticated = !!Meteor.userId();
-            Session.set('userAuthenticated', isAuthenticated);
-            onAuthChange(isAuthenticated);
-        });
+    componentWillMount() {
         // Start the selected id tracker
-        this.selectedNoteIdTracker = Tracker.autorun(()=>{
+        this.selectedNoteIdTracker = Tracker.autorun(() => {
             const selectedNoteId = Session.get('selectedNoteId');
-            if(selectedNoteId){
+            if (selectedNoteId) {
                 history.replace(`/dash/${selectedNoteId}`);
             } else {
                 Session.set('selectedNoteId', undefined);
             }
         });
     }
-    componentWillUnmount(){
+    componentWillUnmount() {
         // Stop all trackers:
-        this.authTracker.stop();
+        // this.authTracker.stop();
         this.selectedNoteIdTracker.stop();
     }
-    render(){
-        return(
-            <Routes/>
+    render() {
+        return (
+            <Routes />
         );
     }
 }

@@ -7,6 +7,7 @@ import Dashboard from '/imports/react/components/pages/Dashboard';
 import Login from '/imports/react/components/pages/Login';
 import Signup from '/imports/react/components/pages/Signup';
 import PageNotFound from '/imports/react/components/pages/PageNotFound';
+import EmailVerification from '/imports/react/components/pages/EmailVerification';
 
 const userAuthenticated = !!Meteor.userId();
 
@@ -39,6 +40,7 @@ class Routes extends React.Component {
                     <Route exact path="/signup" component={Signup} />
                     <Route exact path="/dash" component={Dashboard} />
                     <Route path="/dash/:id" component={Dashboard} />
+                    <Route exact path="/verify-email/:token" component={EmailVerification} />
                     <Route component={PageNotFound} />
                 </Switch>
             </Router>

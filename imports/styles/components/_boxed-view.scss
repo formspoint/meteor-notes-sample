@@ -17,10 +17,19 @@
     background-color: $boxed_view_box_bg;
     padding: 2.4rem 5rem;
     text-align: center;
-    width: 24rem;
+    width: $boxed_view_width_normal;
     &.wider-box {
-        width:30rem;
+        width:$boxed_view_width_wider;
+        &.flexible {
+            width:auto;
+            padding: 3rem 5rem;
+        }
     }
+    &.flexible:not(.wider-box){
+        width: auto;
+        min-width:$boxed_view_width_normal;
+        max-width:$boxed_view_width_max;
+    }    
 }
 
 .boxed-view__form {
@@ -36,4 +45,13 @@
     color: red;
     font-size: $base_font_size - 0.2;
     text-align: justify;
+}
+
+.boxed-view__message--single {
+    font-size: $base_font_size - 0.2;
+    text-align: center;
+    margin: 0 auto;
+    &.error {
+        color: red;
+    }
 }
