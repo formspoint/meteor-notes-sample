@@ -145,7 +145,7 @@ export class Signup extends React.Component {
                         onAfterOpen={()=>{this.refs.modalCloseButton.focus();}}
                         onRequestClose={this.closeSuccessModal}>
                         <h1 style={{color:'green'}}>Successfully created</h1>
-                        <p>You should receive an email shortly with instructions on how to activate your account.</p>
+                        <p>You will receive an email shortly with instructions on how to activate your account.</p>
                         <p>Please, also check your spam folder.</p>
                         <button ref='modalCloseButton' className='button button--pill hover-alt-color' onClick={this.closeSuccessModal}>Go back home</button>
                     </Modal>

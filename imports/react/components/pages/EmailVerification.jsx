@@ -62,19 +62,19 @@ export class EmailVerification extends React.Component {
                     return (
                         <div>
                             <h1>Error</h1>
-                            <p className='boxed-view__message--single error'>{this.state.error}</p>
+                            <h2 className='boxed-view__message--single error'>{this.state.error}</h2>
                         </div>
                     );
                 } else if (!!this.state.verified) {
                     return (
                         <div>
                             <h1 style={{ color: 'green' }}>Verification successful!</h1>
-                            <p className='boxed-view__message--single'>{`You will be redirected in ...${this.state.seconds}`}</p>
+                            <h2 className='boxed-view__message--single'>{`You will be redirected in ...${this.state.seconds}`}</h2>
                         </div>
                     );
                 }
             } else {
-                return <p className='boxed-view__message--single'>Please wait...</p>
+                return <h2 className='boxed-view__message--single'>Please wait...</h2>
             }
         }
         return (

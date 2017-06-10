@@ -28,6 +28,21 @@ export const onAuthChange = (isAuthenticated) => {
     }
 };
 
+const routes = [
+    { path: '/', exact: true, component: Login },
+    { path: '/signup', exact: true, component: Signup },
+    { path: '/dash', exact: true, component: Dashboard },
+    { path: '/dash/:id', component: Dashboard },
+    { path: '/verify-email/:token', exact: true, component: EmailVerification },
+    { component: PageNotFound }
+];
+
+const RoutesWithSubRoutes = (route) => (
+    <Route path={route.path} render={(props) => (
+        <route.component {...props} routes={route.routes} />
+    )} />
+)
+
 class Routes extends React.Component {
     constructor(props) {
         super(props);
@@ -36,12 +51,9 @@ class Routes extends React.Component {
         return (
             <Router history={history}>
                 <Switch>
-                    <Route exact path="/" component={Login}  />
-                    <Route exact path="/signup" component={Signup} />
-                    <Route exact path="/dash" component={Dashboard} />
-                    <Route path="/dash/:id" component={Dashboard} />
-                    <Route exact path="/verify-email/:token" component={EmailVerification} />
-                    <Route component={PageNotFound} />
+                    {routes.map((route, i) => (
+                        <RoutesWithSubRoutes key={i} {...route} />
+                    ))}
                 </Switch>
             </Router>
         );
@@ -49,3 +61,9 @@ class Routes extends React.Component {
 }
 
 export default Routes;
+// <Route exact path="/" component={Login}  />
+// <Route exact path="/signup" component={Signup} />
+// <Route exact path="/dash" component={Dashboard} />
+// <Route path="/dash/:id" component={Dashboard} />
+// <Route exact path="/verify-email/:token" component={EmailVerification} />
+// <Route component={PageNotFound} />
