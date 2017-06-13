@@ -30,9 +30,11 @@ export class Editor extends React.Component {
         });
     }
     handleNoteRemove(e) {
-        this.props.call('notes.remove', this.props.note._id, (err)=>{
-            if(err) throw new Meteor.Error(err.error, err.reason);
-            this.closeRemoveConfirmModal();
+        this.closeRemoveConfirmModal()
+        .then(()=>{
+            this.props.call('notes.remove', this.props.note._id, (err) => {
+                if (err) throw new Meteor.Error(err.error, err.reason);
+            });
         });
     }
     // MODAL ACTIONS
@@ -40,11 +42,15 @@ export class Editor extends React.Component {
         this.setState({ openRemoveConfirmModal: true });
     }
     closeRemoveConfirmModal() {
-        this.setState({ openRemoveConfirmModal: false });
+        return new Promise((resolve,reject)=>{
+            this.setState({ openRemoveConfirmModal: false });
+            resolve();
+        });
     }
 
     render() {
         if (!!this.props.note) {
+            document.title = `Note: ${this.props.note.title || defaultNoteTitle}`;
             return (
                 <div>
                     <Modal
@@ -55,7 +61,7 @@ export class Editor extends React.Component {
                         onRequestClose={this.closeRemoveConfirmModal}>
                         <h2>{`Are you sure you want to remove note '${this.props.note.title || defaultNoteTitle}'`}</h2>
                         <button ref='modalRemove' className='button button--pill hover-alt-color thicker'
-                            style={{marginRight:'1rem'}}
+                            style={{ marginRight: '1rem' }}
                             onClick={this.handleNoteRemove}>Yes, remove</button>
                         <button ref='modalRemove' className='button button--secondary hover-alt-color'
                             onClick={this.closeRemoveConfirmModal}>Cancel</button>
@@ -92,6 +98,7 @@ export default createContainer(() => {
     return {
         selectedNoteId,
         note: Notes.findOne({ _id: selectedNoteId }),
-        call: Meteor.call
+        call: Meteor.call,
+        Session: Session
     };
 }, Editor);

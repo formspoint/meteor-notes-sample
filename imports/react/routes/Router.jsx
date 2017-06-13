@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Router, Route, Switch } from 'react-router-dom';
-import history from '/imports/fixtures/browserHistory';
+import { history } from '/imports/react/App';
+import { Tracker } from 'meteor/tracker';
+import { Notes } from '/imports/api/notes';
 // Grab the Website pages (components):
 import Dashboard from '/imports/react/components/pages/Dashboard';
 import Login from '/imports/react/components/pages/Login';
@@ -9,43 +11,72 @@ import Signup from '/imports/react/components/pages/Signup';
 import PageNotFound from '/imports/react/components/pages/PageNotFound';
 import EmailVerification from '/imports/react/components/pages/EmailVerification';
 
-const userAuthenticated = !!Meteor.userId();
+// const userAuthenticated = !!Meteor.userId();
 
-// Establish the paths that will need auth:
-const authenticatedPaths = ['/dash'];
-// Establish the paths that wont need auth:
-const unauthenticatedPaths = ['/', '/signup'];
+export const onAuthChange = (isAuthenticated, currentPagePrivacy) => {
+    const isUnauthenticatedPath = currentPagePrivacy === 'unauth';
+    const isAuthenticatedPath = currentPagePrivacy === 'auth';
+    const rootPage = routes.find(component => component.rootPage);
+    const mainPage = routes.find(component => component.mainPage);
 
-export const onAuthChange = (isAuthenticated) => {
-    const pathname = history.location.pathname;
-    const isUnauthenticatedPath = unauthenticatedPaths.includes(pathname);
-    const isAuthenticatedPath = authenticatedPaths.includes(pathname);
     if (isUnauthenticatedPath && isAuthenticated) {
-        history.replace('/dash');
+        history.replace(mainPage.path);
     }
     else if (isAuthenticatedPath && !isAuthenticated) {
-        history.replace('/');
+        history.replace(rootPage.path);
     }
 };
 
 const routes = [
-    { path: '/', exact: true, component: Login },
-    { path: '/signup', exact: true, component: Signup },
-    { path: '/dash', exact: true, component: Dashboard },
-    { path: '/dash/:id', component: Dashboard },
-    { path: '/verify-email/:token', exact: true, component: EmailVerification },
-    { component: PageNotFound }
+    { path: '/', exact: true, component: Login, privacy: 'unauth', rootPage: true },
+    { path: '/signup', exact: true, component: Signup, privacy: 'unauth' },
+    { path: '/dash', exact: true, component: Dashboard, privacy: 'auth', mainPage: true },
+    { path: '/dash/:id', exact: true, component: Dashboard, privacy: 'auth' },
+    { path: '/verify-email/:token', exact: true, component: EmailVerification, privacy: 'unauth' },
+    { component: PageNotFound, privacy: 'unauth', documentTitle: '404: Not found' }
 ];
 
-const RoutesWithSubRoutes = (route) => (
-    <Route path={route.path} render={(props) => (
-        <route.component {...props} routes={route.routes} />
-    )} />
-)
-
-class Routes extends React.Component {
+export class RoutesWithSubRoutes extends React.Component {
     constructor(props) {
         super(props);
+    }
+    componentWillUpdate(nextProps, nextState) {
+        onAuthChange(Session.get('userAuthenticated'), Session.get('currentPagePrivacy'));
+    }
+    render() {
+        return (
+            <Route path={this.props.path} render={(props) => (
+                <this.props.component {...props}
+                    privacy={this.props.privacy}
+                    routes={this.props.routes} />
+            )} />
+        );
+    }
+}
+
+
+class _Router extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    componentWillMount(){
+        // Start the selected id tracker
+        this.selectedNoteIdTracker = Tracker.autorun(() => {
+            let selectedNoteId = Session.get('selectedNoteId');
+            if (selectedNoteId) {
+                if (!Notes.findOne({ _id: selectedNoteId })) {
+                    Session.set('selectedNoteId', undefined);
+                    history.replace(routes.find(component => component.mainPage).path);
+                }
+                else {
+                    history.replace(`/dash/${selectedNoteId}`);
+                }
+            }
+        });        
+    }
+    componentWillUnmount(){
+        // Stop all trackers:
+        this.selectedNoteIdTracker.stop();        
     }
     render() {
         return (
@@ -60,10 +91,4 @@ class Routes extends React.Component {
     }
 }
 
-export default Routes;
-// <Route exact path="/" component={Login}  />
-// <Route exact path="/signup" component={Signup} />
-// <Route exact path="/dash" component={Dashboard} />
-// <Route path="/dash/:id" component={Dashboard} />
-// <Route exact path="/verify-email/:token" component={EmailVerification} />
-// <Route component={PageNotFound} />
+export default _Router;

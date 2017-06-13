@@ -10,15 +10,21 @@ if (Meteor.isClient) {
     describe('Login Component Tests', function () {
         it('Should show error messages (by setting error state)', function () {
             const error = 'This stuff is not working man!';
-            const wrapper = shallow(<Login loginWithPassword={() => { }} />);
+            const wrapper = mount(
+                <MemoryRouter initialEntries={['/']} initialIndex={0}>
+                    <Login loginWithPassword={() => { }} pagePrivacy='auth' />
+                </MemoryRouter>
+            );
 
-            expect(wrapper.state('error')).toBe('');
+            const login = wrapper.find(Login).node;
 
-            wrapper.setState({ error });
+            expect(login.state['error'].length).toEqual('');
+
+            login.setState({ error });
             const errorElement = wrapper.find('p.boxed-view__error');
             expect(errorElement.text()).toBe(error);
 
-            wrapper.setState({ error: '' });
+            login.setState({ error: '' });
             expect(wrapper.find('p.boxed-view__error').length).toBe(0);
         });
 
@@ -69,7 +75,7 @@ if (Meteor.isClient) {
 
             wrapper.find(Login).node.refs['email'].value = validEmail;
             wrapper.find(Login).node.refs['password'].value = validPassword;
-            
+
             wrapper.find('form.boxed-view__form').simulate('submit');
             expect(spy).toHaveBeenCalled();
             // Simulate an error thrown by .loginWithPassword()

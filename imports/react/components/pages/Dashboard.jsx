@@ -1,4 +1,6 @@
 import { Session } from 'meteor/session'; //<-- meteor add session
+import { Tracker } from 'meteor/tracker';
+import { Route, Match } from 'react-router-dom';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Notes } from '/imports/api/notes';
@@ -13,15 +15,12 @@ class Dashboard extends React.Component {
     constructor(props) {
         super(props);
     }
-    redirectIfUnauthenticated(){
-        if (this.props.Session.get('userAuthenticated') !== true)
-        { this.props.history.replace('/'); }
-    }
     componentWillMount() {
-        this.redirectIfUnauthenticated();
+        this.props.Session.set('currentPagePrivacy', this.props.pagePrivacy);
     }
-    componentWillUpdate() {
-        this.redirectIfUnauthenticated();
+    componentWillUpdate(nextProps, nextState) {
+        this.props.Session.set('currentPagePrivacy', nextProps.pagePrivacy);
+        this.props.Session.set('selectedNoteId', nextProps.match.params.id);
     }
     render() {
         return (
@@ -36,6 +35,10 @@ class Dashboard extends React.Component {
     }
 }
 
+Dashboard.propTypes = {
+    pagePrivacy: PropTypes.string.isRequired
+};
+
 export default createContainer((props) => {
     return {
         Session: Session,
@@ -43,12 +46,17 @@ export default createContainer((props) => {
             onReady: () => {
                 const id = props.match.params.id;
                 if (!!id) {
-                    if (!Notes.findOne({ _id: props.match.params.id }))
-                    { props.history.push('/NotFound'); }
+                    if (!Notes.findOne({ _id: id })) {
+                        Session.set('selectedNoteId', undefined);
+                        props.history.push('/NotFound');
+                    }
                     else
                     { Session.set('selectedNoteId', id); }
+                } else {
+                    Session.set('selectedNoteId', undefined);
                 }
             }
-        })
+        }),
+        pagePrivacy: props.privacy
     };
 }, Dashboard);

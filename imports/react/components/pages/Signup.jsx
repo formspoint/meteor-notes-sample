@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Tooltip from 'react-portal-tooltip';
-import history from '/imports/fixtures/browserHistory';
+import { history } from '/imports/react/App';
 import Modal from 'react-modal';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -28,8 +28,7 @@ export class Signup extends React.Component {
         this.closeSuccessModal = this.closeSuccessModal.bind(this);
     }
     componentWillMount() {
-        if (this.props.Session.get('userAuthenticated') === true)
-            this.props.history.replace('/dash');
+        Session.set('currentPagePrivacy', this.props.pagePrivacy);
     }
     onSubmit(e) {
         e.preventDefault();
@@ -57,7 +56,7 @@ export class Signup extends React.Component {
     validateFields() {
         let email = this.state.email;
         let password = this.state.password;
-        let rePassword = this.state.rePassword;        
+        let rePassword = this.state.rePassword;
         if (!!email && !!password && !!rePassword) {
             try {
                 userCredentialsSchema.validate({ email, password });
@@ -126,25 +125,25 @@ export class Signup extends React.Component {
         this.setState({ pwdTtipActive: false });
     }
     // MODAL ACTIONS
-    openSuccessModal(){
-        this.setState({openSuccessModal: true});
+    openSuccessModal() {
+        this.setState({ openSuccessModal: true });
     }
-    closeSuccessModal(){
-        this.setState({openSuccessModal: false});
+    closeSuccessModal() {
+        this.setState({ openSuccessModal: false });
         history.replace('/');
     }
     render() {
         return (
             <div className="boxed-view">
                 <div className="boxed-view__box">
-                    <Modal 
+                    <Modal
                         isOpen={this.state.openSuccessModal}
                         contentLabel='Signup'
                         className='boxed-view__box flexible'
                         overlayClassName='boxed-view boxed-view--modal'
-                        onAfterOpen={()=>{this.refs.modalCloseButton.focus();}}
+                        onAfterOpen={() => { this.refs.modalCloseButton.focus(); }}
                         onRequestClose={this.closeSuccessModal}>
-                        <h1 style={{color:'green'}}>Successfully created</h1>
+                        <h1 style={{ color: 'green' }}>Successfully created</h1>
                         <p>You will receive an email shortly with instructions on how to activate your account.</p>
                         <p>Please, also check your spam folder.</p>
                         <button ref='modalCloseButton' className='button button--pill hover-alt-color' onClick={this.closeSuccessModal}>Go back home</button>
@@ -152,7 +151,7 @@ export class Signup extends React.Component {
                     <h1>Signup Form</h1>
                     {this.state.error ? <p className="boxed-view__error">{this.state.error}</p> : undefined}
                     <form className='boxed-view__form' onSubmit={this.onSubmit.bind(this)} noValidate>
-                        <input type="email" ref="email" name="email" placeholder="Email" onChange={(e)=>{this.setState({email: e.target.value.trim()})}} value={this.state.email} />
+                        <input type="email" ref="email" name="email" placeholder="Email" onChange={(e) => { this.setState({ email: e.target.value.trim() }) }} value={this.state.email} />
                         <input id='passwrd'
                             onFocus={this.openPwdTtip.bind(this)}
                             onBlur={this.closePwdTtip.bind(this)}
@@ -160,17 +159,17 @@ export class Signup extends React.Component {
                             ref="password"
                             name="password"
                             placeholder="Password (6-8 characters)"
-                            onChange={(e)=>{this.setState({password: e.target.value.trim()});}}
+                            onChange={(e) => { this.setState({ password: e.target.value.trim() }); }}
                             value={this.state.password} />
                         <Tooltip active={this.state.pwdTtipActive} position='right' arrow='center' parent='#passwrd'>
                             <div className='tooltip__content'>
                                 <p>Must contain letters, digits and special characters (at least 1 of each)</p>
                             </div>
                         </Tooltip>
-                        <input 
-                            type="password" ref="rePassword" name="rePassword" 
+                        <input
+                            type="password" ref="rePassword" name="rePassword"
                             placeholder="Re-enter your password"
-                            onChange={(e)=>{this.setState({rePassword: e.target.value.trim()});}}
+                            onChange={(e) => { this.setState({ rePassword: e.target.value.trim() }); }}
                             value={this.state.rePassword} />
                         <button className='button'>Create Account</button>
                     </form>
@@ -182,13 +181,15 @@ export class Signup extends React.Component {
 }
 
 Signup.propTypes = {
-    createUser: PropTypes.func.isRequired
+    createUser: PropTypes.func.isRequired,
+    pagePrivacy: PropTypes.string.isRequired
 };
 
-export default createContainer(() => {
+export default createContainer((props) => {
     return {
         createUser: Accounts.createUser,
         Session: Session,
-        Subscription: Meteor.subscribe('email')
+        Subscription: Meteor.subscribe('email'),
+        pagePrivacy: props.privacy
     };
 }, Signup);

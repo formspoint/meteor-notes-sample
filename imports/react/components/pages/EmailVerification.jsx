@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { createContainer } from 'meteor/react-meteor-data';
-import history from '/imports/fixtures/browserHistory';
+import { history } from '/imports/react/App';
 
 export class EmailVerification extends React.Component {
     constructor(props) {
@@ -43,7 +43,7 @@ export class EmailVerification extends React.Component {
         }
     }
     startCountdown() {
-        this.setState({counting:true});
+        this.setState({ counting: true });
         var countdown = window.setInterval(() => {
             if (this.state.seconds === 0) {
                 window.clearInterval(countdown);

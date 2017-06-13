@@ -15,8 +15,7 @@ export class Login extends React.Component {
         this.clearFields = this.clearFields.bind(this);
     }
     componentWillMount(){
-        if(this.props.Session.get('userAuthenticated') === true)
-            this.props.history.replace('/dash');
+        Session.set('currentPagePrivacy', this.props.pagePrivacy);
     }
     onSubmit(e) {
         e.preventDefault();
@@ -78,12 +77,14 @@ export class Login extends React.Component {
 }
 
 Login.propTypes = {
-    loginWithPassword: PropTypes.func.isRequired
+    loginWithPassword: PropTypes.func.isRequired,
+    pagePrivacy: PropTypes.string.isRequired
 };
 
-export default createContainer(() => {
+export default createContainer((props) => {
     return {
         loginWithPassword: Meteor.loginWithPassword,
-        Session: Session
+        Session: Session,
+        pagePrivacy: props.privacy
     };
 }, Login);

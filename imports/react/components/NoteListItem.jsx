@@ -9,6 +9,7 @@ export const NoteListItem = (props) => {
     return (
         <div onClick={()=>{
             props.Session.set('selectedNoteId', props.note._id);
+            // props.Session.set('selectedNoteId', 'asdfasdf');
         }}>
             <h5>{props.note.title || defaultNoteTitle}</h5>
             {props.note.selected ? 'selected' : undefined}
